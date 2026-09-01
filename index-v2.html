@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ILTN Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF8E9;
+    --ink:#2E1D0C;
+    --muted:#9A7A4A;
+    --glass:rgba(255,251,240,0.62);
+    --glass-border:rgba(255,255,255,0.9);
+    --violet:#E8791F;
+    --blue:#F5A623;
+    --teal:#FFC24B;
+    --coral:#FF8C29;
+    --amber:#FFD166;
+    --pink:#C15A1E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* Animated gradient blobs */
+  .blob{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:0.35;
+    z-index:0;
+    animation:float 18s ease-in-out infinite;
+  }
+  .blob1{width:480px; height:480px; background:var(--violet); top:-160px; left:-120px; animation-delay:0s;}
+  .blob2{width:420px; height:420px; background:var(--teal); top:200px; right:-160px; animation-delay:4s;}
+  .blob3{width:380px; height:380px; background:var(--coral); bottom:-140px; left:20%; animation-delay:8s;}
+  .blob4{width:300px; height:300px; background:var(--blue); bottom:10%; right:10%; animation-delay:2s;}
+  @keyframes float{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(30px,-30px) scale(1.08);}
+  }
+
+  .wrap{max-width:1000px; margin:0 auto; padding:56px 24px 100px; position:relative; z-index:1;}
+
+  /* Header */
+  header{
+    position:relative;
+    background:var(--glass);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    border-radius:28px;
+    padding:40px 40px 32px;
+    box-shadow:0 8px 40px rgba(20,22,31,0.06);
+    margin-bottom:40px;
+  }
+  .badge-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    font-weight:600;
+    padding:5px 12px;
+    border-radius:999px;
+    color:#fff;
+    letter-spacing:0.02em;
+  }
+  h1.title{
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:44px;
+    line-height:1.05;
+    margin:0 0 10px;
+    background:linear-gradient(90deg, var(--violet), var(--blue) 45%, var(--teal));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size:16px;
+    margin:0 0 22px;
+    max-width:520px;
+  }
+  .dateline{
+    position:absolute;
+    top:14px; right:18px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:9px;
+    color:var(--muted);
+    opacity:0.6;
+  }
+
+  /* Section header */
+  .section-head{
+    display:flex; align-items:center; gap:10px;
+    margin:48px 0 20px;
+  }
+  .section-icon{
+    width:34px; height:34px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:'Sora', sans-serif; font-weight:700; font-size:15px;
+  }
+  h2.section-title{
+    font-family:'Sora', sans-serif;
+    font-weight:700;
+    font-size:24px;
+    margin:0;
+  }
+  .section-sub{color:var(--muted); font-size:14px; margin:0 0 20px 44px;}
+
+  /* Feed */
+  .feed-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:700px){.feed-grid{grid-template-columns:1fr;}}
+  .feed-card{
+    background:var(--glass);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border);
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 6px 28px rgba(20,22,31,0.05);
+  }
+  .feed-source{
+    display:flex; align-items:center; gap:8px;
+    font-family:'Sora', sans-serif; font-weight:700; font-size:14px;
+    margin-bottom:14px;
+  }
+  .dot{width:8px; height:8px; border-radius:50%;}
+  .post-item{
+    padding:12px 0;
+    border-top:1px solid rgba(20,22,31,0.08);
+    transition:transform 0.15s ease;
+  }
+  .post-item:hover{transform:translateX(3px);}
+  .post-item a{
+    color:var(--ink);
+    text-decoration:none;
+    font-weight:600;
+    font-size:14.5px;
+  }
+  .post-item a:hover{color:var(--blue);}
+  .post-meta{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:3px;
+  }
+  .post-placeholder{
+    padding:12px 0;
+    border-top:1px solid rgba(20,22,31,0.08);
+    font-size:13px;
+    color:#B4B8C4;
+    font-style:italic;
+  }
+  .collapsible{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.35s ease;
+  }
+  .collapsible.open{max-height:300px;}
+  .toggle-btn{
+    background:none; border:none; cursor:pointer; padding:8px 0 0;
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:600;
+    color:var(--violet); text-align:left;
+  }
+  .toggle-btn:hover{color:var(--blue);}
+
+  /* Tab bar */
+  .tab-bar{
+    display:flex; justify-content:flex-end; gap:6px;
+    margin:40px 0 18px;
+  }
+  .tab{
+    font-family:'Sora', sans-serif; font-weight:600; font-size:13px;
+    padding:8px 18px;
+    border-radius:999px;
+    border:1px solid rgba(20,22,31,0.12);
+    background:rgba(255,255,255,0.5);
+    color:var(--muted);
+    cursor:pointer;
+    transition:all 0.2s ease;
+  }
+  .tab.active{
+    background:linear-gradient(135deg, var(--violet), var(--blue));
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 4px 14px rgba(232,121,31,0.3);
+  }
+  .tab:hover:not(.active){background:rgba(255,255,255,0.8); color:var(--ink);}
+
+  /* Leaderboard */
+  .leaderboard-item{display:flex; gap:16px; align-items:flex-start;}
+  .rank{
+    width:32px; height:32px; border-radius:50%;
+    background:linear-gradient(135deg, var(--coral), var(--amber));
+    color:#fff; font-family:'Sora', sans-serif; font-weight:800; font-size:14px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .lb-title{
+    font-family:'Sora', sans-serif; font-weight:700; font-size:15.5px;
+    color:var(--ink); text-decoration:none; display:block; margin-bottom:4px;
+  }
+  .lb-title:hover{color:var(--blue);}
+  .lb-desc{font-size:13px; color:#5A4A38; margin:0 0 6px; line-height:1.45;}
+  .lb-byline{
+    display:inline-block; margin-top:8px;
+    font-family:'JetBrains Mono', monospace; font-size:10.5px;
+    color:var(--violet); text-decoration:none;
+  }
+  .lb-byline:hover{color:var(--blue);}
+
+  /* Judges grid */
+  .judges-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .judge-card-wide{grid-column:1 / -1; max-width:calc(50% - 10px);}
+  @media (max-width:760px){
+    .judges-grid{grid-template-columns:1fr;}
+    .judge-card-wide{max-width:none;}
+  }
+  .judge-card{
+    background:var(--glass);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--glass-border);
+    border-radius:22px;
+    padding:26px;
+    box-shadow:0 6px 28px rgba(20,22,31,0.05);
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .judge-card:hover{transform:translateY(-4px); box-shadow:0 14px 40px rgba(20,22,31,0.1);}
+  .judge-top{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .avatar{
+    width:56px; height:56px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:'Sora', sans-serif; font-weight:700; font-size:19px;
+    flex-shrink:0;
+  }
+  .judge-name{
+    font-family:'Sora', sans-serif; font-weight:700; font-size:18px; margin:0 0 3px;
+  }
+  .judge-org{
+    font-size:12.5px; color:var(--muted); margin:0; line-height:1.3;
+  }
+  .judge-bio{
+    list-style:none; padding:0; margin:0 0 16px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .judge-bio li{
+    font-size:13.5px; padding-left:16px; position:relative; color:#3A3D4A;
+  }
+  .judge-bio li::before{
+    content:"";
+    position:absolute; left:0; top:7px;
+    width:6px; height:6px; border-radius:50%;
+    background:var(--violet);
+  }
+  .spotted{
+    background:rgba(232,121,31,0.08);
+    border:1px solid rgba(232,121,31,0.2);
+    border-radius:14px;
+    padding:14px 16px;
+  }
+  .spotted-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--violet);
+    display:block; margin-bottom:6px;
+  }
+  .spotted p{font-size:13px; margin:0; color:#3A3D4A; line-height:1.5;}
+
+  footer{
+    margin-top:56px;
+    text-align:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div class="blob blob4"></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="badge-row">
+      <span class="pill" style="background:var(--violet);">PERSONAL TRACKER</span>
+      <span class="pill" style="background:var(--teal);">ILTN VIBEATHON 2026</span>
+    </div>
+    <h1 class="title">Indian LegalTech Tracker</h1>
+    <div class="dateline">
+      <span>Last updated: 28 Aug 2026</span>
+    </div>
+  </header>
+
+  <div class="section-head">
+    <div class="section-icon" style="background:var(--coral);">🏆</div>
+    <h2 class="section-title">Leaderboard</h2>
+  </div>
+  <p class="section-sub">Top submissions in the ILTN × vibecode.law Vibeathon 2026, from the public leaderboard.</p>
+
+  <div class="feed-card" style="margin-bottom:40px;">
+    <div class="leaderboard-item">
+      <div class="rank">1</div>
+      <div style="flex:1;">
+        <a href="https://vibecode.law/showcase/practice-wise-opportunity-identifier-tool-105997" target="_blank" class="lb-title">Practice-Wise Opportunity Identifier Tool</a>
+        <p class="lb-desc">Client intelligence tool for Trilegal business development. Helps identify practice-wise opportunities from client data.</p>
+        <div class="post-meta">Mohit Sharma · 155 votes</div>
+        <a href="https://vibecode.law/showcase/practice-wise-opportunity-identifier-tool-105997" target="_blank" class="lb-byline">View submission on vibecode.law →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" id="tab-panel" onclick="showTab('panel')">Panel</button>
+    <button class="tab" id="tab-feed" onclick="showTab('feed')">Feed</button>
+  </div>
+
+  <div id="panel-section">
+  <p class="section-sub">Judges of the ILTN × vibecode.law Vibeathon 2026.</p>
+
+  <div class="judges-grid">
+
+    <div class="judge-card">
+      <div class="judge-top">
+        <div class="avatar" style="background:linear-gradient(135deg, var(--violet), var(--blue));">KG</div>
+        <div>
+          <p class="judge-name">Komal Gupta</p>
+          <p class="judge-org">Chief Innovation Officer, Cyril Amarchand Mangaldas</p>
+        </div>
+      </div>
+      <ul class="judge-bio">
+        <li>16+ years in alternate legal services, ILS Law College grad</li>
+        <li>Built career at Integreon before joining CAM</li>
+        <li>Leads CAM's firm-wide innovation and AI strategy</li>
+        <li>Founded Vichaar and Prarambh, India's first legal-tech incubator</li>
+      </ul>
+      <div class="spotted">
+        <span class="spotted-label">Recently spotted</span>
+        <p>On CAM's "Clear Cut" podcast (Dec 2025), discussed becoming an "AI-first" firm — early due-diligence AI tools, Vichaar, Prarambh cohorts, and rolling out Legora and Copilot firm-wide. Sits on the JGU Legal Incubation Centre advisory board.</p>
+      </div>
+    </div>
+
+    <div class="judge-card">
+      <div class="judge-top">
+        <div class="avatar" style="background:linear-gradient(135deg, var(--teal), var(--blue));">DS</div>
+        <div>
+          <p class="judge-name">Dipti Sharma</p>
+          <p class="judge-org">Head of Legal Technology, Trilegal</p>
+        </div>
+      </div>
+      <ul class="judge-bio">
+        <li>CS Engineering degree, then LLB from Delhi University</li>
+        <li>Master's in Business Law, National Law School of India University</li>
+        <li>Started at GLG, then Shardul Amarchand Mangaldas</li>
+        <li>Joined Trilegal 2018, rose to Head of Legal Technology</li>
+      </ul>
+      <div class="spotted">
+        <span class="spotted-label">Recently spotted</span>
+        <p>Panelist on Jus Mundi's Apr 2026 report "Measuring the Value of Legal AI," alongside Shreya Vajpei — on moving past anecdotal wins toward quantifiable AI ROI. Rare CS + law combo shapes how she evaluates tools.</p>
+      </div>
+    </div>
+
+    <div class="judge-card">
+      <div class="judge-top">
+        <div class="avatar" style="background:linear-gradient(135deg, var(--coral), var(--amber));">SN</div>
+        <div>
+          <p class="judge-name">Sateesh Nori</p>
+          <p class="judge-org">Chief Legal Futurist, LawDroid</p>
+        </div>
+      </div>
+      <ul class="judge-bio">
+        <li>20 years as a NYC tenant-rights attorney</li>
+        <li>Johns Hopkins and NYU Law graduate</li>
+        <li>Joined LawDroid Jan 2026, its first Chief Legal Futurist</li>
+        <li>Senior Research Fellow, AI and Access to Justice, NYU Law</li>
+      </ul>
+      <div class="spotted">
+        <span class="spotted-label">Recently spotted</span>
+        <p>Writes the "Legal Futurisms" newsletter, including a recent India edition on it being the world's 2nd-largest legal tech market. Co-created Depositron, a tenant deposit-recovery app. Spoke at NextBillion (Jul 2026) on AI for access-to-justice.</p>
+      </div>
+    </div>
+
+    <div class="judge-card">
+      <div class="judge-top">
+        <div class="avatar" style="background:linear-gradient(135deg, var(--pink), var(--violet));">RC</div>
+        <div>
+          <p class="judge-name">Rahul Chhabra</p>
+          <p class="judge-org">Director, Applied AI, Herbert Smith Freehills Kramer</p>
+        </div>
+      </div>
+      <ul class="judge-bio">
+        <li>Previously ran legal/privacy/compliance transformation at Meta</li>
+        <li>Advises early-stage founders building enterprise AI</li>
+        <li>Builds operating models for durable AI adoption at HSF Kramer</li>
+        <li>Focus: regulated environments where trust must be earned first</li>
+      </ul>
+      <div class="spotted">
+        <span class="spotted-label">Recently spotted</span>
+        <p>Quoted in CIO magazine (Aug 2026): change management remains the hardest part of AI adoption — harder than the RPA era. On an ILTACON 2026 panel about proving real AI usage to skeptical PE clients.</p>
+      </div>
+    </div>
+
+    <div class="judge-card judge-card-wide">
+      <div class="judge-top">
+        <div class="avatar" style="background:linear-gradient(135deg, var(--amber), var(--teal));">SB</div>
+        <div>
+          <p class="judge-name">Spriha Bhandari</p>
+          <p class="judge-org">Asst. Professor &amp; Asst. Dean, Jindal Global Law School</p>
+        </div>
+      </div>
+      <ul class="judge-bio">
+        <li>Cornell Tech LLM in Law, Technology &amp; Entrepreneurship</li>
+        <li>Began in litigation — banking, securitization, white-collar defense</li>
+        <li>Previously led NLP and Legal Engineering at Zenlaw</li>
+        <li>Asst. Director, Cyril Shroff Centre for AI, Law and Regulation</li>
+      </ul>
+      <div class="spotted">
+        <span class="spotted-label">Recently spotted</span>
+        <p>Profiled in ILTN's "Waymaker Wednesday" series (Dec 2025) — bridging academia, practice, and product thinking; designs frameworks for data privacy, cybersecurity, and agile AI policymaking.</p>
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+  <div id="feed-section" style="display:none;">
+  <p class="section-sub">Recent posts from Shreya Vajpei and the Indian LegalTech Network.</p>
+
+  <div class="feed-grid">
+    <div class="feed-card">
+      <div class="feed-source"><span class="dot" style="background:var(--coral);"></span> Shreya Vajpei</div>
+      <div class="post-item">
+        <a href="https://www.linkedin.com/pulse/i-spy-everyone-different-identically-shreya-vajpei-q9pme" target="_blank">I Spy: Everyone Is Different, Identically</a>
+        <div class="post-meta">28 JUL 2026 · linkedin.com/pulse</div>
+      </div>
+      <div class="collapsible" id="shreya-more">
+        <div class="post-item">
+          <a href="https://www.linkedin.com/pulse/i-spy-8-companies-advertised-legal-engineer-meant-different-vajpei-o8jvf" target="_blank">I Spy: 8 Companies Advertised "Legal Engineer" — and Meant 8 Different Things</a>
+          <div class="post-meta">4 AUG 2026 · linkedin.com/pulse</div>
+        </div>
+        <div class="post-item">
+          <a href="https://www.linkedin.com/pulse/before-you-innovate-understand-system-youre-operating-shreya-vajpei-hg20e" target="_blank">Before You Innovate, Understand the System You're Operating In</a>
+          <div class="post-meta">25 MAR 2026 · linkedin.com/pulse</div>
+        </div>
+      </div>
+      <button class="toggle-btn" id="shreya-toggle-btn" onclick="toggleShreya()">Show more ▾</button>
+    </div>
+    <div class="feed-card">
+      <div class="feed-source"><span class="dot" style="background:var(--teal);"></span> Indian LegalTech Network</div>
+      <div class="post-item">
+        <a href="https://www.indianlegaltech.net/post/build-the-future-of-legaltech-iltn-vibecode-law-vibeathon-2026" target="_blank">Build the Future of LegalTech: ILTN × vibecode.law Vibeathon 2026</a>
+        <div class="post-meta">21 AUG 2026 · indianlegaltech.net</div>
+      </div>
+      <div class="post-item">
+        <a href="https://www.indianlegaltech.net/post/waymaker-wednesday-women-in-legaltech-meet-supin-prem" target="_blank">Waymaker Wednesday: Meet Supin Prem</a>
+        <div class="post-meta">4 AUG 2026 · indianlegaltech.net</div>
+      </div>
+      <div class="post-item">
+        <a href="https://www.indianlegaltech.net/post/governing-legal-ai-before-someone-does-it-for-you" target="_blank">Governing Legal AI Before Someone Does It for You</a>
+        <div class="post-meta">3 AUG 2026 · indianlegaltech.net</div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+  <footer></footer>
+
+</div>
+
+<script>
+function toggleShreya(){
+  var el = document.getElementById('shreya-more');
+  var btn = document.getElementById('shreya-toggle-btn');
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? 'Show less ▴' : 'Show more ▾';
+}
+function showTab(name){
+  var panel = document.getElementById('panel-section');
+  var feed = document.getElementById('feed-section');
+  var tabPanel = document.getElementById('tab-panel');
+  var tabFeed = document.getElementById('tab-feed');
+  if(name === 'panel'){
+    panel.style.display = 'block';
+    feed.style.display = 'none';
+    tabPanel.classList.add('active');
+    tabFeed.classList.remove('active');
+  } else {
+    panel.style.display = 'none';
+    feed.style.display = 'block';
+    tabFeed.classList.add('active');
+    tabPanel.classList.remove('active');
+  }
+}
+</script>
+</body>
+</html>
