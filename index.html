@@ -182,28 +182,43 @@
   }
   .toggle-btn:hover{color:var(--blue);}
 
-  /* Tab bar */
+  /* Tab switch */
   .tab-bar{
-    display:flex; justify-content:flex-end; gap:6px;
+    display:flex; justify-content:flex-end;
     margin:40px 0 18px;
   }
-  .tab{
-    font-family:'Sora', sans-serif; font-weight:600; font-size:13px;
-    padding:8px 18px;
+  .tab-switch{
+    position:relative;
+    display:inline-flex;
     border-radius:999px;
+    background:rgba(255,255,255,0.55);
     border:1px solid rgba(20,22,31,0.12);
-    background:rgba(255,255,255,0.5);
+    padding:4px;
+  }
+  .tab-highlight{
+    position:absolute;
+    top:4px; left:4px;
+    width:calc(50% - 4px);
+    height:calc(100% - 8px);
+    border-radius:999px;
+    background:linear-gradient(135deg, var(--violet), var(--blue));
+    box-shadow:0 4px 14px rgba(232,121,31,0.3);
+    transition:transform 0.25s ease;
+    z-index:0;
+  }
+  .tab-opt{
+    position:relative; z-index:1;
+    border:none;
+    background:transparent;
+    font-family:'Sora', sans-serif; font-weight:600; font-size:13px;
+    padding:8px 24px;
+    min-width:80px;
+    border-radius:999px;
     color:var(--muted);
     cursor:pointer;
-    transition:all 0.2s ease;
+    transition:color 0.2s ease;
   }
-  .tab.active{
-    background:linear-gradient(135deg, var(--violet), var(--blue));
-    color:#fff;
-    border-color:transparent;
-    box-shadow:0 4px 14px rgba(232,121,31,0.3);
-  }
-  .tab:hover:not(.active){background:rgba(255,255,255,0.8); color:var(--ink);}
+  .tab-opt.active{color:#fff;}
 
   /* Leaderboard */
   .leaderboard-item{display:flex; gap:16px; align-items:flex-start;}
@@ -226,6 +241,25 @@
     color:var(--violet); text-decoration:none;
   }
   .lb-byline:hover{color:var(--blue);}
+  .view-more-btn{
+    display:inline-block;
+    margin-top:14px;
+    padding:7px 16px;
+    border-radius:999px;
+    background:rgba(232,121,31,0.1);
+    border:1px solid rgba(232,121,31,0.3);
+    color:var(--violet);
+    font-family:'Sora', sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    text-decoration:none;
+    transition:all 0.2s ease;
+  }
+  .view-more-btn:hover{
+    background:linear-gradient(135deg, var(--violet), var(--blue));
+    color:#fff;
+    border-color:transparent;
+  }
 
   /* Judges grid */
   .judges-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
@@ -333,8 +367,11 @@
   </div>
 
   <div class="tab-bar">
-    <button class="tab active" id="tab-panel" onclick="showTab('panel')">Panel</button>
-    <button class="tab" id="tab-feed" onclick="showTab('feed')">Feed</button>
+    <div class="tab-switch">
+      <div class="tab-highlight" id="tab-highlight"></div>
+      <button class="tab-opt active" id="tab-panel" onclick="showTab('panel')">Panel</button>
+      <button class="tab-opt" id="tab-feed" onclick="showTab('feed')">Feed</button>
+    </div>
   </div>
 
   <div id="panel-section">
@@ -446,7 +483,7 @@
   </div>
 
   <div id="feed-section" style="display:none;">
-  <p class="section-sub">Recent posts from Shreya Vajpei and the Indian LegalTech Network.</p>
+  <p class="panel-heading">Recent posts from Shreya Vajpei and the Indian LegalTech Network</p>
 
   <div class="feed-grid">
     <div class="feed-card">
@@ -455,17 +492,14 @@
         <a href="https://www.linkedin.com/pulse/i-spy-everyone-different-identically-shreya-vajpei-q9pme" target="_blank">I Spy: Everyone Is Different, Identically</a>
         <div class="post-meta">28 JUL 2026 · linkedin.com/pulse</div>
       </div>
-      <div class="collapsible" id="shreya-more">
-        <div class="post-item">
-          <a href="https://www.linkedin.com/pulse/i-spy-8-companies-advertised-legal-engineer-meant-different-vajpei-o8jvf" target="_blank">I Spy: 8 Companies Advertised "Legal Engineer" — and Meant 8 Different Things</a>
-          <div class="post-meta">4 AUG 2026 · linkedin.com/pulse</div>
-        </div>
-        <div class="post-item">
-          <a href="https://www.linkedin.com/pulse/before-you-innovate-understand-system-youre-operating-shreya-vajpei-hg20e" target="_blank">Before You Innovate, Understand the System You're Operating In</a>
-          <div class="post-meta">25 MAR 2026 · linkedin.com/pulse</div>
-        </div>
+      <div class="post-item">
+        <a href="https://www.linkedin.com/pulse/i-spy-8-companies-advertised-legal-engineer-meant-different-vajpei-o8jvf" target="_blank">I Spy: 8 Companies Advertised "Legal Engineer" — and Meant 8 Different Things</a>
+        <div class="post-meta">4 AUG 2026 · linkedin.com/pulse</div>
       </div>
-      <button class="toggle-btn" id="shreya-toggle-btn" onclick="toggleShreya()">Show more ▾</button>
+      <div class="post-item">
+        <a href="https://www.linkedin.com/pulse/before-you-innovate-understand-system-youre-operating-shreya-vajpei-hg20e" target="_blank">Before You Innovate, Understand the System You're Operating In</a>
+        <div class="post-meta">25 MAR 2026 · linkedin.com/pulse</div>
+      </div>
     </div>
     <div class="feed-card">
       <div class="feed-source"><span class="dot" style="background:var(--teal);"></span> Indian LegalTech Network</div>
@@ -481,6 +515,7 @@
         <a href="https://www.indianlegaltech.net/post/governing-legal-ai-before-someone-does-it-for-you" target="_blank">Governing Legal AI Before Someone Does It for You</a>
         <div class="post-meta">3 AUG 2026 · indianlegaltech.net</div>
       </div>
+      <a href="https://www.indianlegaltech.net" target="_blank" class="view-more-btn">View More →</a>
     </div>
   </div>
   </div>
@@ -491,27 +526,24 @@
 </div>
 
 <script>
-function toggleShreya(){
-  var el = document.getElementById('shreya-more');
-  var btn = document.getElementById('shreya-toggle-btn');
-  el.classList.toggle('open');
-  btn.textContent = el.classList.contains('open') ? 'Show less ▴' : 'Show more ▾';
-}
 function showTab(name){
   var panel = document.getElementById('panel-section');
   var feed = document.getElementById('feed-section');
   var tabPanel = document.getElementById('tab-panel');
   var tabFeed = document.getElementById('tab-feed');
+  var highlight = document.getElementById('tab-highlight');
   if(name === 'panel'){
     panel.style.display = 'block';
     feed.style.display = 'none';
     tabPanel.classList.add('active');
     tabFeed.classList.remove('active');
+    highlight.style.transform = 'translateX(0)';
   } else {
     panel.style.display = 'none';
     feed.style.display = 'block';
     tabFeed.classList.add('active');
     tabPanel.classList.remove('active');
+    highlight.style.transform = 'translateX(100%)';
   }
 }
 </script>
