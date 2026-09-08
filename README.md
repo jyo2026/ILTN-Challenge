@@ -1,7 +1,7 @@
 # ILTN-Challenge
 Indian LegalTech Tracker
 
-A small personal dashboard for following the Indian legal tech scene, built while I prep for a Legal Engineer role.
+A small personal dashboard for following the Indian legal tech scene, built for legal tech enthusiats.
 
 It tracks recent writing from Shreya Vajpei (founder of the Indian LegalTech Network) and posts from ILTN itself, along with a profile of the five judges for the ILTN x vibecode.law Vibeathon 2026, and a leaderboard section for the hackathon submissions.
 
